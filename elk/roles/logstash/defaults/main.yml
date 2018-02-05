@@ -13,8 +13,5 @@ logstash_config_dir: /opt/logstash/current/conf.d
 logstash_log_dir: /opt/logstash/log
 logstash_config_file_path: /opt/logstash/current/conf.d/logstash.conf
 
-# logstash_host_address: "192.128.20.12"
-# logstash_elasticsearch_url: "http://192.128.20.12:9200"
-
 logstash_listen_port_beats: 5044
 logstash_elasticsearch_hosts: "192.128.20.12:9200"
