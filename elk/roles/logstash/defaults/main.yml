@@ -1,0 +1,20 @@
+---
+# defaults file for logstash
+
+logstash_service_name: logstash
+logstash_archive: logstash-5.6.3.tar.gz
+logstash_url: https://artifacts.elastic.co/downloads/logstash/{{ logstash_archive }}
+logstash_user: logstash
+logstash_group: logstash
+
+logstash_install_dir: /opt/logstash
+logstash_build_folder: /tmp/logstash
+logstash_config_dir: /opt/logstash/current/conf.d
+logstash_log_dir: /opt/logstash/log
+logstash_config_file_path: /opt/logstash/current/conf.d/logstash.conf
+
+# logstash_host_address: "192.128.20.12"
+# logstash_elasticsearch_url: "http://192.128.20.12:9200"
+
+logstash_listen_port_beats: 5044
+logstash_elasticsearch_hosts: "192.128.20.12:9200"

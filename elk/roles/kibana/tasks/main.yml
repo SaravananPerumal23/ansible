@@ -1,0 +1,66 @@
+---
+
+- name: create kibana group
+  group:
+    name={{ kibana_group }}
+    state=present
+
+- name: create kibana user
+  user:
+    name={{ kibana_user }}
+    group={{ kibana_group }}
+
+- name: create kibana directories
+  file:
+    state=directory
+    path={{ item }}
+    owner={{ kibana_user }}
+    group={{ kibana_group }}
+    recurse=true
+  with_items:
+    - "{{ kibana_install_dir }}"
+    - "{{ kibana_log_dir }}"
+    - "{{ kibana_build_folder }}"
+
+- name: download kibana archive
+  get_url:
+    url={{ kibana_url }}
+    dest={{ kibana_build_folder }}/{{ kibana_archive }}
+  register: kibana_was_downloaded
+
+- name: copy and unpack kibana archive
+  unarchive:
+    src={{ kibana_build_folder }}/{{ kibana_archive }}
+    dest={{ kibana_install_dir }}
+    copy=no
+
+- name: link installed kibana directory to current
+  file:
+    state=link
+    src={{ kibana_install_dir }}/{{ kibana_archive|replace('.tar.gz', '') }}
+    path={{ kibana_install_dir }}/current
+    owner={{ kibana_user }}
+    group={{ kibana_group }}
+
+- name: provide access permission to kibana directory
+  file:
+    state=directory
+    path={{ kibana_install_dir }}/{{ kibana_archive|replace('.tar.gz', '') }}
+    owner={{ kibana_user }}
+    group={{ kibana_group }}
+    recurse=true
+
+- name: setup kibana config
+  template:
+    backup=yes
+    src=kibana.yml.j2
+    dest={{ kibana_config_file_path }}
+    owner={{ kibana_user }}
+    group={{ kibana_group }}
+    mode=0644
+  notify: restart kibana
+  tags:
+    - config
+
+- name: kibana runit service
+  include_tasks: runitconfig.yml

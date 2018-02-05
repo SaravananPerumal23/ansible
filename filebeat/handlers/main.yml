@@ -1,0 +1,26 @@
+---
+
+- name: restart linux filebeat
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and not filebeat_use_runit
+  become: yes
+  service:
+    name: filebeat
+    state: restarted
+
+- name: restart linux filebeat runit
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and filebeat_use_runit
+  become: yes
+  runit:
+    name: filebeat
+    enabled: yes
+    state: restarted
+    service_dir: /etc/service
+    service_src: /etc/sv
+  notify:
+   - restart runit
+
+- name: restart windows filebeat
+  when: ansible_os_family == 'Windows'
+  win_service:
+    name: filebeat
+    state: restarted

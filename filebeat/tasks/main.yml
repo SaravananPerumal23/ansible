@@ -1,0 +1,6 @@
+---
+- include_tasks: win-filebeat.yml
+  when: ansible_os_family == 'Windows'
+
+- include_tasks: linux-filebeat.yml
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'

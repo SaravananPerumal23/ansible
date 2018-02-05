@@ -1,0 +1,27 @@
+---
+# defaults file for elasticsearch
+
+elasticsearch_service_name: elasticsearch
+elasticsearch_archive: elasticsearch-5.6.3.tar.gz
+elasticsearch_url: https://artifacts.elastic.co/downloads/elasticsearch/{{ elasticsearch_archive }}
+elasticsearch_user: elasticsearch
+elasticsearch_group: elasticsearch
+
+elasticsearch_java_install: true
+elasticsearch_install_dir: /opt/elasticsearch
+elasticsearch_build_folder: /tmp/elasticsearch
+elasticsearch_config_dir: /opt/elasticsearch/current/config
+elasticsearch_data_dir: /opt/elasticsearch/current/data
+elasticsearch_log_dir: /opt/elasticsearch/log
+elasticsearch_config: {}
+elasticsearch_config_file_path: /opt/elasticsearch/current/config/elasticsearch.yml
+
+elasticsearch_instancename: elasticnode
+es_xpack_features: ["alerting","monitoring","graph","ml","security"]
+
+elasticsearch_host_address: "192.128.20.12"
+elasticsearch_host_port: "9200"
+
+update_java: true
+java: "{{ es_java | default('java-1.8.0-openjdk.x86_64') }}"
+java_version: 1.8.0

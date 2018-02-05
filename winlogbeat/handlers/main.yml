@@ -1,0 +1,4 @@
+---
+
+- name: winlogbeat restart
+  win_service: name=winlogbeat state=restarted

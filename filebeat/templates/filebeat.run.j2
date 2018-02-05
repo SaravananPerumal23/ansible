@@ -1,0 +1,7 @@
+#!/bin/sh
+
+exec 2>&1
+exec chpst -u {{filebeat_user}} /usr/share/filebeat/bin/filebeat \
+-c {{filebeat_config_file_path}} \
+-path.logs {{filebeat_logs_dir}} \
+-path.data {{filebeat_data_dir}} \

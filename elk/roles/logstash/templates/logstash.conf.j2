@@ -1,0 +1,11 @@
+input {
+  beats {
+    port => {{ logstash_listen_port_beats }}
+  }
+}
+
+output {
+elasticsearch { hosts => ["{{ logstash_elasticsearch_hosts }}"] }
+# uncomment this for debug messages
+#  stdout { codec => rubydebug }
+}

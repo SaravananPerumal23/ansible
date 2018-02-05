@@ -1,0 +1,17 @@
+---
+# defaults file for kibana
+
+kibana_service_name: kibana
+kibana_archive: kibana-5.6.3-linux-x86_64.tar.gz
+kibana_url: https://artifacts.elastic.co/downloads/kibana/{{ kibana_archive }}
+kibana_user: kibana
+kibana_group: kibana
+
+kibana_install_dir: /opt/kibana
+kibana_build_folder: /tmp/kibana
+kibana_config_dir: /opt/kibana/current/config
+kibana_log_dir: /opt/kibana/log
+kibana_config_file_path: /opt/kibana/current/config/kibana.yml
+
+kibana_host_address: "192.128.20.12"
+kibana_elasticsearch_url: "http://192.128.20.12:9200"

@@ -1,0 +1,38 @@
+# filebeat
+Playboook for Filebeat installation
+
+## Pre-Requisite
+Depending on the environment you wanted to run this Filebeat, you might need to consider this dependency
+  Runit - This is a service monitoring tool which takes care of keeping your service up and running whenever the server gets restarted or your application process gets killed. This tool also includes logging mechanism which does auto rotation of log files. It captures the application logs written to the console.
+  If non windows OS is the environment where you want to install filebeat, you could enable 'filebeat_use_runit' flag to have filebeat configured to run with runit. If not it gets installed with the plain old way.
+
+## Running filebeat playbook
+
+windows
+```
+- hosts: windows
+  roles:
+    - filebeat
+```
+
+Linux/Centos - Without Runit
+```
+- hosts: linux
+  roles:
+    - {role: filebeat, become: true, become_method: su, become_user: root}
+```
+
+Linux/Centos - With Runit configured
+```
+- hosts: linux
+  roles:
+    - {role: runit, become: true, become_method: su, become_user: root}
+    - {role: filebeat, become: true, become_method: su, become_user: root}
+```
+
+### Checking if the service is up and running with runit
+
+Login to the Linux/Centos instance and run this command
+```
+sudo sv status filebeat
+```

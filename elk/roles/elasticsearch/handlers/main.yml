@@ -1,0 +1,11 @@
+---
+- name: restart elasticsearch
+  become: yes
+  runit:
+    name: "{{ elasticsearch_service_name }}"
+    enabled: yes
+    state: restarted
+    service_dir: /etc/service
+    service_src: /etc/sv
+  # notify:
+  #  - restart runit

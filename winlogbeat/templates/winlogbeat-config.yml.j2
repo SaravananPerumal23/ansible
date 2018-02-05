@@ -1,0 +1,8 @@
+winlogbeat.event_logs:
+  - name: Application
+    ignore_older: 72h
+  - name: Security
+  - name: System
+
+output:
+  {{ winlogbeat_output | to_yaml | indent(4) }}

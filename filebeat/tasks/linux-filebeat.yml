@@ -1,0 +1,108 @@
+---
+
+- name: create user group
+  group:
+    name: "{{ filebeat_user_group }}"
+    state: present
+
+- name: create filebeat service user
+  user:
+    name: "{{ filebeat_user }}"
+    group: "{{ filebeat_user_group }}"
+
+- name: Add Elastic GPG key.
+  rpm_key:
+    key: https://packages.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Add Filebeat repository.
+  template:
+    src: elastic.repo.j2
+    dest: /etc/yum.repos.d/elastic.repo
+    owner: "{{ filebeat_user }}"
+    group: "{{ filebeat_user_group }}"
+    mode: 0644
+
+- name: install filebeat
+  yum:
+    name: "filebeat-{{ filebeat_version }}"
+    #installroot: "/opt/filebeat/" - need to check how to install to a specific folder path
+    state: present
+  notify:
+    - restart linux filebeat
+    - restart linux filebeat runit
+
+- name: Ensure {{filebeat_config_dir}} exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ filebeat_user }}"
+    group: "{{ filebeat_user_group }}"
+  with_items:
+    - "{{filebeat_config_dir}}"
+    - "{{filebeat_data_dir}}"
+    - "{{filebeat_logs_dir}}"
+    - "{{filebeat_runit_log_dir}}"
+
+- name: Ensure main filebeat.yml is generated
+  template:
+    src: filebeat-config.yml.j2
+    dest: "{{filebeat_config_file_path}}"
+    owner: "{{ filebeat_user }}"
+    group: "{{ filebeat_user_group }}"
+    mode: 0755
+  notify:
+    - restart linux filebeat
+    - restart linux filebeat runit
+
+#filebeat without runit
+- name: Ensure filebeat service is started
+  when: not filebeat_use_runit
+  become: yes
+  service:
+    name: filebeat
+    state: started
+
+#filebeat runs using runit
+
+- name: create runit directories for filebeat service
+  when: filebeat_use_runit
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ filebeat_user }}"
+    group: "{{ filebeat_user_group }}"
+  with_items:
+    - "/etc/sv/filebeat"
+    - "/etc/sv/filebeat/log"
+
+- name: install runit service for filebeat
+  when: filebeat_use_runit
+  template:
+    src: "filebeat.run.j2"
+    dest: "/etc/sv/filebeat/run"
+    owner: "{{ filebeat_user }}"
+    group: "{{ filebeat_user_group }}"
+    mode: 0755
+  notify:
+   - restart linux filebeat runit
+
+- name: install runit log service for filebeat
+  when: filebeat_use_runit
+  template:
+    src: "filebeat.log.run.j2"
+    dest: "/etc/sv/filebeat/log/run"
+    owner: "{{ filebeat_user }}"
+    group: "{{ filebeat_user_group }}"
+    mode: 0755
+  notify:
+   - restart linux filebeat runit
+
+- name: enable filebeat service
+  become: yes
+  runit:
+    name: filebeat
+    enabled: yes
+    state: started
+    service_dir: /etc/service
+    service_src: /etc/sv

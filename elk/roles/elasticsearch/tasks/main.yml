@@ -1,0 +1,70 @@
+---
+
+- include_tasks: java.yml
+  when: elasticsearch_java_install
+  tags:
+      - java
+
+- name: create elasticsearch group
+  group:
+    name={{ elasticsearch_group }}
+    state=present
+
+- name: create elasticsearch user
+  user:
+    name={{ elasticsearch_user }}
+    group={{ elasticsearch_group }}
+
+- name: create elasticsearch directories
+  file:
+    state=directory
+    path={{ item }}
+    owner={{ elasticsearch_user }}
+    group={{ elasticsearch_group }}
+    recurse=true
+  with_items:
+    - "{{ elasticsearch_install_dir }}"
+    - "{{ elasticsearch_log_dir }}"
+    - "{{ elasticsearch_build_folder }}"
+
+- name: download elasticsearch archive
+  get_url:
+    url={{ elasticsearch_url }}
+    dest={{ elasticsearch_build_folder }}/{{ elasticsearch_archive }}
+  register: elasticsearch_was_downloaded
+
+- name: copy and unpack elasticsearch archive
+  unarchive:
+    src={{ elasticsearch_build_folder }}/{{ elasticsearch_archive }}
+    dest={{ elasticsearch_install_dir }}
+    copy=no
+
+- name: link installed elasticsearch directory to current
+  file:
+    state=link
+    src={{ elasticsearch_install_dir }}/{{ elasticsearch_archive|replace('.tar.gz', '') }}
+    path={{ elasticsearch_install_dir }}/current
+    owner={{ elasticsearch_user }}
+    group={{ elasticsearch_group }}
+
+- name: provide access permission to elasticsearch directory
+  file:
+    state=directory
+    path={{ elasticsearch_install_dir }}/{{ elasticsearch_archive|replace('.tar.gz', '') }}
+    owner={{ elasticsearch_user }}
+    group={{ elasticsearch_group }}
+    recurse=true
+
+- name: setup elasticsearch config
+  template:
+    backup=yes
+    src=elasticsearch.yml.j2
+    dest={{ elasticsearch_config_file_path }}
+    owner={{ elasticsearch_user }}
+    group={{ elasticsearch_group }}
+  notify: restart elasticsearch
+  tags:
+    - config
+
+- name: elasticsearch runit service
+  include_tasks: runitconfig.yml

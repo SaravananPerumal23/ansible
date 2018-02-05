@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+exec chpst -u {{elasticsearch_user}} {{elasticsearch_install_dir}}/current/bin/elasticsearch \
+-Epath.conf={{elasticsearch_config_dir}}

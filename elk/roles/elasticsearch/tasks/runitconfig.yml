@@ -1,0 +1,38 @@
+- name: create runit directories for elasticsearch service
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_group }}"
+  with_items:
+    - "/etc/sv/elasticsearch"
+    - "/etc/sv/elasticsearch/log"
+
+- name: install runit service for elasticsearch
+  template:
+    src: "elasticsearch.run.j2"
+    dest: "/etc/sv/elasticsearch/run"
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_group }}"
+    mode: 0755
+  notify:
+   - restart elasticsearch
+
+- name: install runit log service for elasticsearch
+  template:
+    src: "elasticsearch.log.run.j2"
+    dest: "/etc/sv/elasticsearch/log/run"
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_group }}"
+    mode: 0755
+  notify:
+   - restart elasticsearch
+
+- name: enable elasticsearch service
+  become: yes
+  runit:
+    name: elasticsearch
+    enabled: yes
+    state: started
+    service_dir: /etc/service
+    service_src: /etc/sv

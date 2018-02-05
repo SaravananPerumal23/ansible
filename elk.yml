@@ -1,0 +1,7 @@
+---
+- hosts: linux
+  roles:
+    - {role: runit, become: true, become_method: su, become_user: root}
+    - {role: elasticsearch, become: true, become_method: su, become_user: root}
+    - {role: kibana, become: true, become_method: su, become_user: root}
+    - {role: logstash, become: true, become_method: su, become_user: root}

@@ -1,0 +1,9 @@
+---
+- hosts: windows
+  roles:
+    - filebeat
+
+- hosts: linux
+  roles:
+    - {role: runit, become: true, become_method: su, become_user: root}
+    - {role: filebeat, become: true, become_method: su, become_user: root}

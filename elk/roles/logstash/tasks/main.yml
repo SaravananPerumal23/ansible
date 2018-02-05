@@ -1,0 +1,67 @@
+---
+
+- name: create logstash group
+  group:
+    name={{ logstash_group }}
+    state=present
+
+- name: create logstash user
+  user:
+    name={{ logstash_user }}
+    group={{ logstash_group }}
+
+- name: create logstash directories
+  file:
+    state=directory
+    path={{ item }}
+    owner={{ logstash_user }}
+    group={{ logstash_group }}
+    recurse=true
+  with_items:
+    - "{{ logstash_install_dir }}"
+    - "{{ logstash_log_dir }}"
+    - "{{ logstash_build_folder }}"
+    - "{{ logstash_config_dir }}"
+
+- name: download logstash archive
+  get_url:
+    url={{ logstash_url }}
+    dest={{ logstash_build_folder }}/{{ logstash_archive }}
+  register: logstash_was_downloaded
+
+- name: copy and unpack logstash archive
+  unarchive:
+    src={{ logstash_build_folder }}/{{ logstash_archive }}
+    dest={{ logstash_install_dir }}
+    copy=no
+
+- name: link installed logstash directory to current
+  file:
+    state=link
+    src={{ logstash_install_dir }}/{{ logstash_archive|replace('.tar.gz', '') }}
+    path={{ logstash_install_dir }}/current
+    owner={{ logstash_user }}
+    group={{ logstash_group }}
+
+- name: provide access permission to logstash directory
+  file:
+    state=directory
+    path={{ logstash_install_dir }}/{{ logstash_archive|replace('.tar.gz', '') }}
+    owner={{ logstash_user }}
+    group={{ logstash_group }}
+    recurse=true
+
+- name: setup logstash config
+  template:
+    backup=yes
+    src=logstash.conf.j2
+    dest={{ logstash_config_file_path }}
+    owner={{ logstash_user }}
+    group={{ logstash_group }}
+    mode=0644
+  notify: restart logstash
+  tags:
+    - config
+
+- name: logstash runit service
+  include_tasks: runitconfig.yml

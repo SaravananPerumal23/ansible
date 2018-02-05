@@ -1,0 +1,23 @@
+---
+
+- name: Ensure winlogbeat is installed
+  win_chocolatey:
+    name: winlogbeat
+    version: "{{winlogbeat_version}}"
+    state: present
+
+- name: Ensure {{winlogbeat_config_dir}} exists
+  win_file: path={{winlogbeat_config_dir}} state=directory
+
+- name: Ensure main winlogbeat.yml is generated
+  win_template:
+    src: winlogbeat-config.yml.j2
+    dest: "{{winlogbeat_config_file_path}}"
+  notify: winlogbeat restart
+
+- name: Ensure winlogbeat service is started
+  win_service:
+    name: winlogbeat
+    start_mode: auto
+    state: started
+    enabled: yes

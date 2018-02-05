@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+exec chpst -u {{kibana_user}} {{ kibana_install_dir }}/current/bin/kibana \
+-c {{kibana_config_file_path}}

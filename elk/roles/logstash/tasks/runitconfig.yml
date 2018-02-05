@@ -1,0 +1,39 @@
+---
+- name: create runit directories for logstash service
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
+  with_items:
+    - "/etc/sv/logstash"
+    - "/etc/sv/logstash/log"
+
+- name: install runit service for logstash
+  template:
+    src: "logstash.run.j2"
+    dest: "/etc/sv/logstash/run"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
+    mode: 0755
+  notify:
+   - restart logstash
+
+- name: install runit log service for logstash
+  template:
+    src: "logstash.log.run.j2"
+    dest: "/etc/sv/logstash/log/run"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
+    mode: 0755
+  notify:
+   - restart logstash
+
+- name: enable logstash service
+  become: yes
+  runit:
+    name: logstash
+    enabled: yes
+    state: started
+    service_dir: /etc/service
+    service_src: /etc/sv

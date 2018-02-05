@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+exec chpst -u {{logstash_user}} {{ logstash_install_dir }}/current/bin/logstash \
+-c {{logstash_config_file_path}}

@@ -1,0 +1,23 @@
+---
+- name: Ensure filebeat is installed
+  win_chocolatey:
+    name: filebeat
+    version: "{{filebeat_version}}"
+    state: latest
+
+- name: Ensure {{filebeat_config_dir}} exists
+  win_file: path={{filebeat_config_dir}} state=directory
+
+- name: Ensure main filebeat.yml is generated
+  win_template:
+    src: filebeat-config.yml.j2
+    dest: "{{filebeat_config_file_path}}"
+  notify:
+    - restart linux filebeat
+    - restart windows filebeat
+
+- name: Ensure filebeat service is started
+  win_service:
+    name: filebeat
+    start_mode: auto
+    state: started

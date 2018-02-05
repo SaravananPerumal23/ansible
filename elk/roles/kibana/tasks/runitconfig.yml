@@ -1,0 +1,39 @@
+---
+- name: create runit directories for kibana service
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ kibana_user }}"
+    group: "{{ kibana_group }}"
+  with_items:
+    - "/etc/sv/kibana"
+    - "/etc/sv/kibana/log"
+
+- name: install runit service for kibana
+  template:
+    src: "kibana.run.j2"
+    dest: "/etc/sv/kibana/run"
+    owner: "{{ kibana_user }}"
+    group: "{{ kibana_group }}"
+    mode: 0755
+  notify:
+   - restart kibana
+
+- name: install runit log service for kibana
+  template:
+    src: "kibana.log.run.j2"
+    dest: "/etc/sv/kibana/log/run"
+    owner: "{{ kibana_user }}"
+    group: "{{ kibana_group }}"
+    mode: 0755
+  notify:
+   - restart kibana
+
+- name: enable kibana service
+  become: yes
+  runit:
+    name: kibana
+    enabled: yes
+    state: started
+    service_dir: /etc/service
+    service_src: /etc/sv
