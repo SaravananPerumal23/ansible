@@ -1,0 +1,110 @@
+---
+
+- name: create elastalert group
+  group:
+    name={{ elastalert_group }}
+    state=present
+
+- name: create elastalert user
+  user:
+    name={{ elastalert_user }}
+    group={{ elastalert_group }}
+
+# Need this repo included to get python-pip and other Yum packages
+- name: import EPEL GPG Key
+  rpm_key: key=https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 state=present
+  become: true
+
+- name: check for EPEL repo
+  yum: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm state=present
+  become: true
+
+- name: install pre-requisites
+  become: true
+  yum:
+    name:
+      - git
+      - python-pip
+      - gcc
+      - python-devel
+    state: present
+
+- name: install Python-Pip Packages
+  become: true
+  pip:
+    name:
+      - pip
+      - six
+      #- idna
+      #- cryptography
+      - "setuptools>=11.3"
+      #- "elasticsearch>=5.0.0"
+    state: present
+
+
+- name: clone ElastAlert Git Repository
+  git:
+    repo: https://github.com/Yelp/elastalert.git
+    accept_hostkey: yes
+    dest: "{{ elastalert_install_dir }}"
+    update: no
+
+# Commenting this below one considering this wasnt required- but need to check for differen
+# - name: install PIP Requirements
+#   pip:
+#     requirements='{{ elastalert_install_dir }}/requirements.txt'
+#     state='latest'
+#   notify:
+#     - restart elastalert
+
+- name: install ElastAlert module
+  command: python setup.py install
+  args:
+    chdir: "{{ elastalert_install_dir }}"
+    creates: /root/.elastalert_installed
+
+- name: create elastalert directories
+  file:
+    state=directory
+    path={{ item }}
+    owner={{ elastalert_user }}
+    group={{ elastalert_group }}
+    recurse=true
+  with_items:
+    - "{{ elastalert_log_dir }}"
+    - "{{ elastalert_rules_dir }}"
+
+- name: check if ElastAlert Index exists
+  uri:
+    url: "http://{{ elastalert_elasticsearch_hosts }}:{{ elastalert_elasticsearch_port }}/{{ elastalert_index }}"
+    method: HEAD
+    status_code:
+      - 200
+      - 404
+  register: elastalert_index_check
+
+- name: create ElastAlert Index if it doesn't exist
+  command: elastalert-create-index --host "{{ elastalert_elasticsearch_hosts }}" --port "{{ elastalert_elasticsearch_port }}" --no-auth --no-ssl --url-prefix "" --index "{{ elastalert_index }}" --old-index ""
+  args:
+    chdir: "{{ elastalert_install_dir }}"
+  when: elastalert_index_check.status == 404
+  notify:
+    - restart elastalert
+
+- name: setup elastalert config
+  template:
+    src=config.yaml
+    dest={{ elastalert_config_file_path }}
+    owner={{ elastalert_user }}
+    group={{ elastalert_group }}
+    mode=0644
+  notify:
+    - restart elastalert
+  tags:
+    - config
+
+- name: setup elastalert rules_folder
+  include_tasks: rules.yml
+
+- name: setup elastalert runit service
+  include_tasks: runitconfig.yml

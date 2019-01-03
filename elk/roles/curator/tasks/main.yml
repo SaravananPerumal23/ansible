@@ -1,0 +1,75 @@
+---
+- include: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: create elasticsearch curator user group
+  group:
+    name={{ elasticsearch_curator_user_group }}
+    state=present
+
+- name: create elasticsearch curator user
+  user:
+    name={{ elasticsearch_curator_user }}
+    group={{ elasticsearch_curator_user_group }}
+
+- name: Install Elasticsearch Curator and required dependencies.
+  pip:
+    name="{{ item.name }}"
+    version="{{ item.version | default(omit) }}"
+  with_items:
+    - name: elasticsearch-curator
+      version: "{{ elasticsearch_curator_version }}"
+    - name: argparse
+
+# Configuration files
+- name: Create elasticsearch-curator config dir
+  file:
+    path:  "{{ elasticsearch_curator_conf_dir }}"
+    state: directory
+    owner: "{{ elasticsearch_curator_user }}"
+    group: "{{ elasticsearch_curator_user_group }}"
+
+- name: Create elasticsearch-curator config file
+  template:
+    src:   curator.yml.j2
+    dest:  "{{ elasticsearch_curator_conf_dir }}/curator.yml"
+    owner: "{{ elasticsearch_curator_user }}"
+    group: "{{ elasticsearch_curator_user_group }}"
+    mode:  0644
+
+- name: Create elasticsearch-curator actions config file
+  template:
+    src:   actions.yml.j2
+    dest:  "{{ elasticsearch_curator_conf_dir }}/actions.yml"
+    owner: "{{ elasticsearch_curator_user }}"
+    group: "{{ elasticsearch_curator_user_group }}"
+    mode:  0644
+
+# Cron jobs
+- name: Create cron job for elasticsearch-curator
+  cron:
+    name:    "{{ elasticsearch_curator_cron_job.description|default('Curate Elasticsearch Indices') }}"
+    minute:  "{{ elasticsearch_curator_cron_job.minute|default('*') }}"
+    hour:    "{{ elasticsearch_curator_cron_job.hour|default('*') }}"
+    day:     "{{ elasticsearch_curator_cron_job.day|default('*') }}"
+    weekday: "{{ elasticsearch_curator_cron_job.weekday|default('*') }}"
+    month:   "{{ elasticsearch_curator_cron_job.month|default('*') }}"
+    user:    "{{ elasticsearch_curator_cron_job.user|default('root') }}"
+    job:     "/usr/bin/curator --config {{ elasticsearch_curator_conf_dir }}/curator.yml {{ elasticsearch_curator_conf_dir }}/actions.yml"
+    cron_file: elasticsearch-curator
+  when: elasticsearch_curator_cron_job
+
+# Use this if you want to directly use Elastalert functions in Cron job
+# - name: Configure cron jobs for Elasticsearch Curator.
+#   cron:
+#     name: "{{ item.name }}"
+#     job: "{{ item.job }}"
+#     minute: "{{ item.minute | default('*') }}"
+#     hour: "{{ item.hour | default('*') }}"
+#     day: "{{ item.day | default('*') }}"
+#     weekday: "{{ item.weekday | default('*') }}"
+#     month: "{{ item.month | default('*') }}"
+#   with_items: "{{ elasticsearch_curator_cron_jobs }}"

@@ -1,0 +1,39 @@
+---
+- name: create runit directories for elastalert service
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ elastalert_user }}"
+    group: "{{ elastalert_group }}"
+  with_items:
+    - "/etc/sv/elastalert"
+    - "/etc/sv/elastalert/log"
+
+- name: install runit service for elastalert
+  template:
+    src: "elastalert.run.j2"
+    dest: "/etc/sv/elastalert/run"
+    owner: "{{ elastalert_user }}"
+    group: "{{ elastalert_group }}"
+    mode: 0755
+  notify:
+   - restart elastalert
+
+- name: install runit log service for elastalert
+  template:
+    src: "elastalert.log.run.j2"
+    dest: "/etc/sv/elastalert/log/run"
+    owner: "{{ elastalert_user }}"
+    group: "{{ elastalert_group }}"
+    mode: 0755
+  notify:
+   - restart elastalert
+
+- name: enable elastalert service
+  become: yes
+  runit:
+    name: elastalert
+    enabled: yes
+    state: started
+    service_dir: /etc/service
+    service_src: /etc/sv

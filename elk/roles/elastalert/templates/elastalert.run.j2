@@ -1,0 +1,4 @@
+#!/bin/sh
+cd {{elastalert_install_dir}}
+exec 2>&1
+exec python -m elastalert.elastalert --verbose --config /opt/elastalert/config.yaml

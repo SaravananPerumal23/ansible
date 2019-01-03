@@ -1,0 +1,58 @@
+---
+elasticsearch_curator_version: 5.4.1
+elasticsearch_curator_install_dir : /opt/elasticsearch-curator
+elasticsearch_curator_conf_dir: /opt/elasticsearch-curator/Config
+
+elasticsearch_curator_user: elasticsearch
+elasticsearch_curator_user_group: elasticsearch
+
+# Specific to Curator Config elements- Start
+elasticsearch_curator_client_hosts: "{{ ansible_eth0.ipv4.address }}" # OR a list of hosts
+elasticsearch_curator_client_port: 9200
+elasticsearch_curator_client_url_prefix:
+elasticsearch_curator_client_use_ssl: False
+elasticsearch_curator_client_certificate:
+elasticsearch_curator_client_client_cert:
+elasticsearch_curator_client_client_key:
+elasticsearch_curator_client_aws_key:
+elasticsearch_curator_client_aws_secret_key:
+elasticsearch_curator_client_aws_region:
+elasticsearch_curator_client_ssl_no_validate: False
+elasticsearch_curator_client_http_auth:
+elasticsearch_curator_client_timeout: 30
+elasticsearch_curator_client_master_only: False
+
+elasticsearch_curator_logging_loglevel: INFO
+elasticsearch_curator_logging_logfile:
+elasticsearch_curator_logging_logformat: default
+elasticsearch_curator_logging_blacklist: ['elasticsearch', 'urllib3']
+# Specific to Curator Config elements- End
+
+elasticsearch_curator_actions:
+ - action: delete_indices
+   description: Delete older filbeat indices. Ignores empty list and exit cleanly.
+   options:
+     ignore_empty_list: True
+     timeout_override:
+     continue_if_exception: False
+     disable_action: False
+   filters:
+     - filtertype: pattern
+       kind: prefix
+       value: logstash-
+       exclude:
+     - filtertype: age
+       source: name
+       direction: older
+       timestring: "'%Y.%m.%d'"
+       unit: days
+       unit_count: 30
+       exclude:
+
+elasticsearch_curator_cron_job:
+  description: "Curate Elasticsearch Indices once per week"
+  minute:  '0'
+  hour:    '22'
+  weekday: '*'
+  month:   '*'
+  user:    elasticsearch
