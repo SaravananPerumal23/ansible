@@ -1,0 +1,55 @@
+es_host: {{ elastalert_elasticsearch_hosts }}
+es_port: {{ elastalert_elasticsearch_port }}
+
+name: {{ item.value.name }}
+index: {{ item.value.index|default("logstash-*") }}
+type: {{ item.value.type }}
+include:
+  - "hostname"
+
+{% if item.value.filter_type is defined %}
+filter:
+  - {{ item.value.filter_type }}:
+  {% if item.value.filter_query_string is defined %}
+    query_string:
+        query: "{{ item.value.filter_query_string }}"
+  {% endif %}
+{% endif %}
+
+{% if item.value.filter_type == 'query' %}
+num_events: {{ item.value.num_events }}
+
+timeframe:
+  hours: {{ item.value.timeframe_hours }}
+{% endif %}
+
+alert:
+{% for alert in item.value.alert %}
+  - "{{ alert }}"
+{% endfor %}
+
+email:
+{% for email in item.value.email %}
+  - "{{ email }}"
+{% endfor %}
+
+smtp_host: {{ smtp_host }}
+from_addr: {{ from_addr }}
+
+slack:
+slack_webhook_url: "{{ slackWebHookURL }}"
+
+{% for entry in ['alert_subject', 'alert_text'] %}
+{% if item.value[entry] is defined %}
+{{ entry }}: "{{ item.value[entry] }}"
+{% endif %}
+{% endfor %}
+
+{% for entry in ['alert_subject_args', 'alert_text_args'] %}
+{% if item.value[entry] is defined %}
+{{ entry }}:
+{% for line in item.value[entry] %}
+  - '{{ line }}'
+{% endfor %}
+{% endif %}
+{% endfor %}

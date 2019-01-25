@@ -1,0 +1,59 @@
+---
+# defaults file for elastalert
+
+elastalert_service_name: elastalert
+elastalert_user: elastalert
+elastalert_group: elastalert
+
+elastalert_install_dir: /opt/elastalert
+elastalert_rules_dir: /opt/elastalert/elastalert_rules
+elastalert_log_dir: /opt/elastalert/log
+elastalert_config_file_path: /opt/elastalert/config.yaml
+
+elastalert_index: "elastalert_status"
+elastalert_elasticsearch_hosts: "XXX.XXX.XX.XX" #IP Address of ElasticSearch instance
+elastalert_elasticsearch_port: "9200"
+
+smtp_host: "smtp.gmail.com"
+from_addr: "noreply@gmail.com"
+slackWebHookURL: https://hooks.slack.com/services/SLACK-UNIQUE-CHANNEL-ID
+
+elastalert_rules:
+  appGeneralError_freq:
+    name: GeneralError
+    index: logstash-*
+    type: frequency
+    num_events: 1
+    timeframe_hours: 2
+    filter_type: query
+    filter_query_string: 'type: log AND error AND NOT (\"Cleanup failed\" OR \"folderpath\error\")'
+    include:
+      - beat.hostname
+      - message
+    alert:
+      - email
+      - slack
+    email:
+      - recipient@gmail.com
+    alert_subject: "Application Error Alert Occured in {0}"
+    alert_text: "Application Error Alert Message- {0}"
+    alert_subject_args:
+      - beat.hostname
+    alert_text_args:
+      - message
+    # extra: ""
+  servicesMonitoring_freq:
+    name: ServiceMonitoring
+    index: logstash-*
+    type: frequency
+    num_events: 1
+    timeframe_hours: 2
+    filter_type: query
+    filter_query_string: '\"entered the stopped state\" AND (\"Service One\" OR \"Service Two\")'
+    alert:
+      - email
+      - slack
+    email:
+      - recipient@gmail.com
+    alert_subject: "Services Stopped Alert"
+    alert_text: "Services Stopped Alert"

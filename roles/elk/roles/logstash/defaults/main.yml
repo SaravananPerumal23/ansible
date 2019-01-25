@@ -11,7 +11,12 @@ logstash_install_dir: /opt/logstash
 logstash_build_folder: /tmp/logstash
 logstash_config_dir: /opt/logstash/current/conf.d
 logstash_log_dir: /opt/logstash/log
-logstash_config_file_path: /opt/logstash/current/conf.d/logstash.conf
+logstash_config_file_path: /opt/logstash/current/config/logstash.conf
 
+logstash_java_install: true
 logstash_listen_port_beats: 5044
 logstash_elasticsearch_hosts: "192.128.20.12:9200"
+
+update_java: true
+java: "{{ es_java | default('java-1.8.0-openjdk.x86_64') }}"
+java_version: 1.8.0

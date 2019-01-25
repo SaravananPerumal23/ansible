@@ -1,0 +1,12 @@
+---
+# Need this repo included to get python-pip and other Yum packages
+- name: import EPEL GPG Key
+  rpm_key: key=https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 state=present
+  become: true
+
+- name: check for EPEL repo
+  yum: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm state=present
+  become: true
+
+- name: Ensure pip is installed in Linux instance.
+  yum: name=python-pip state=present

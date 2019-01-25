@@ -1,0 +1,14 @@
+rules_folder: 'elastalert_rules'
+run_every:
+  minutes: 1
+buffer_time:
+  minutes: 15
+es_host: {{ elastalert_elasticsearch_hosts }}
+es_port: 9200
+writeback_index: {{ elastalert_index }}
+alert_time_limit:
+  days: 2
+
+{% for extra in elastalert_config|default([]) %}
+{{ extra }}: {{ elastalert_config[extra]|to_nice_json }}
+{% endfor %}

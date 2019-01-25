@@ -1,0 +1,37 @@
+---
+- name: Install IIS (Web-Server only)
+  win_feature:
+    name: Web-Server
+    state: present
+    include_sub_features: True
+    include_management_tools: True
+  when: web_server is defined and web_server
+  register: feature_result
+
+- name: Reboot if needed
+  win_reboot:
+  when: feature_result.reboot_required is defined and feature_result.reboot_required
+
+- name: Add service account to Log on as a service
+  win_user_right:
+    name: SeServiceLogonRight
+    users:
+    - "{{ service_account }}"
+    action: add
+  when: win_packages is defined and (win_packages | length >0)
+
+- name: Create directories for downloading MSIs
+  win_file:
+    state=directory
+    path={{ item }}
+  with_items:
+    - "{{ msi_download_path }}"
+    - "{{ msi_download_path }}\\temp"
+    - "{{ msi_log_location }}"
+  when: win_packages is defined and (win_packages | length >0)
+
+- include: include.yml package="{{packages}}"
+  with_dict: "{{ win_packages | default([]) }}"
+  loop_control:
+    loop_var: packages
+  when: win_packages is defined and (win_packages | length >0)

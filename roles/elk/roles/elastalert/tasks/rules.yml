@@ -1,0 +1,12 @@
+---
+# file: roles/elastalert/tasks/rules.yml
+
+- name: "Rules"
+  template:
+    src: 'rule.yaml'
+    dest: '{{ elastalert_rules_dir }}/{{ item.key }}.yaml'
+    owner: 'root'
+    group: 'root'
+    mode: '644'
+  with_dict: '{{ elastalert_rules|default([]) }}'
+  tags: 'Rules'
