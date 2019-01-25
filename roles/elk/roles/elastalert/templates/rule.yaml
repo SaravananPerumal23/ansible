@@ -41,7 +41,7 @@ slack_webhook_url: "{{ slackWebHookURL }}"
 
 {% for entry in ['alert_subject', 'alert_text'] %}
 {% if item.value[entry] is defined %}
-{{ entry }}: {{ item.value[entry] }}
+{{ entry }}: "{{ item.value[entry] }}"
 {% endif %}
 {% endfor %}
 

@@ -1,0 +1,18 @@
+---
+# defaults configurations for WIN package Install
+
+#This can be setup within Playbook or at Inventories level
+service_account: USER
+service_account_password: PWD
+environment_name: Local
+msi_log_location: C:\InstallerLogs
+msi_download_path: C:\InstallerFiles
+web_server: false
+win_packages:
+  package1:
+    msi_name: Package1.msi
+    msi_url: 'http://MSI-URL'
+    checksum: 'sfafaguyaf8128361khcads'
+  package2:
+    msi_name: Package2.msi
+    msi_url: 'http://MSI-URL'

@@ -1,0 +1,29 @@
+---
+- name: Iterate through package list
+  debug:
+    msg: "Pacakge Name: {{ package.value.msi_name | trim }}"
+
+- name: Download the MSIs of TCF Services to Temp location
+  win_get_url:
+    url: "{{ package.value.msi_url }}"
+    dest: "{{ msi_download_path }}\\temp\\{{ package.value.msi_name }}"
+    force: no
+
+- name: Get checksum of downloaded items
+  win_stat:
+    path: "{{ msi_download_path }}\\temp\\{{ package.value.msi_name }}"
+  register: pkg_checksum
+
+- name: Copy MSI to actual folder path for installation only if checksum matches or if checksum is not defined
+  win_copy:
+    src: "{{ msi_download_path }}\\temp\\{{ package.value.msi_name }}"
+    dest: "{{ msi_download_path }}\\{{ package.value.msi_name }}"
+    remote_src: true
+  when: (((package.value.checksum is undefined) or (package.value.checksum | trim == '')) or (pkg_checksum.stat.checksum == package.value.checksum))
+
+- name: Install Windows Services
+  win_package:
+    path: "{{ msi_download_path }}\\{{ package.value.msi_name }}"
+    arguments: "USERNAME={{ service_account }} PASSWORD={{ service_account_password }} ENVIRONMENT={{ environment_name }} /qn /L*v {{ msi_log_location }}/{{ package.value.msi_name|replace('.msi', '.log') }}"
+    state: present
+  when: package is defined and (package.value.msi_name | trim != '')

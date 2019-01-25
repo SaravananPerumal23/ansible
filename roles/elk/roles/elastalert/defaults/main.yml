@@ -19,7 +19,7 @@ from_addr: "noreply@gmail.com"
 slackWebHookURL: https://hooks.slack.com/services/SLACK-UNIQUE-CHANNEL-ID
 
 elastalert_rules:
-  apgGeneralError_freq:
+  appGeneralError_freq:
     name: GeneralError
     index: logstash-*
     type: frequency
@@ -27,14 +27,20 @@ elastalert_rules:
     timeframe_hours: 2
     filter_type: query
     filter_query_string: 'type: log AND error AND NOT (\"Cleanup failed\" OR \"folderpath\error\")'
+    include:
+      - beat.hostname
+      - message
     alert:
       - email
+      - slack
     email:
       - recipient@gmail.com
-    alert_subject: "Application Error Alert"
-    alert_text: "Application Error Alert"
-    # alert_subject_args: ""
-    # alert_text_args: ""
+    alert_subject: "Application Error Alert Occured in {0}"
+    alert_text: "Application Error Alert Message- {0}"
+    alert_subject_args:
+      - beat.hostname
+    alert_text_args:
+      - message
     # extra: ""
   servicesMonitoring_freq:
     name: ServiceMonitoring
