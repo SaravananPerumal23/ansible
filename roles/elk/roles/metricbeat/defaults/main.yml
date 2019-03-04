@@ -13,7 +13,8 @@ metricbeat_config_dir: /opt/metricbeat/current/conf.d
 metricbeat_log_dir: /opt/metricbeat/log
 metricbeat_config_file_path: /opt/metricbeat/current/metricbeat.yml
 
-elasticsearch_proxy_url: 192.128.20.12:9200
+elasticsearch_host: 192.128.20.12:9200
+kibana_host: 192.128.20.12:5601
 environment: dev
 
 metricbeat_config:
@@ -45,10 +46,8 @@ metricbeat_config:
 
   output.elasticsearch:
     enabled: true
-    hosts: ["{{ elasticsearch_proxy_url }}"]
-    username: "{{ es_filebeat_user }}"
-    password: "{{ es_filebeat_password }}"
+    hosts: ["{{ elasticsearch_host }}"]
     index: "metricbeat-%{+yyyy.MM.dd}"
   setup.dashboards.enabled: true
   setup.kibana:
-    host: 192.128.20.12:5601
+    host: "{{ kibana_host }}"
