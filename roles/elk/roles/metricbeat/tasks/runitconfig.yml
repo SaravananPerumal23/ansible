@@ -1,0 +1,39 @@
+---
+- name: create runit directories for metricbeat service
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ metricbeat_user }}"
+    group: "{{ metricbeat_group }}"
+  with_items:
+    - "/etc/sv/metricbeat"
+    - "/etc/sv/metricbeat/log"
+
+- name: install runit service for metricbeat
+  template:
+    src: "metricbeat.run.j2"
+    dest: "/etc/sv/metricbeat/run"
+    owner: "{{ metricbeat_user }}"
+    group: "{{ metricbeat_group }}"
+    mode: 0755
+  notify:
+   - restart metricbeat
+
+- name: install runit log service for metricbeat
+  template:
+    src: "metricbeat.log.run.j2"
+    dest: "/etc/sv/metricbeat/log/run"
+    owner: "{{ metricbeat_user }}"
+    group: "{{ metricbeat_group }}"
+    mode: 0755
+  notify:
+   - restart metricbeat
+
+- name: enable metricbeat service
+  become: yes
+  runit:
+    name: metricbeat
+    enabled: yes
+    state: started
+    service_dir: /etc/service
+    service_src: /etc/sv
