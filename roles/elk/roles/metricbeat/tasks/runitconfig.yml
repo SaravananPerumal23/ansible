@@ -17,7 +17,7 @@
     group: "{{ metricbeat_group }}"
     mode: 0755
   notify:
-   - restart metricbeat
+   - restart linux metricbeat
 
 - name: install runit log service for metricbeat
   template:
@@ -27,7 +27,7 @@
     group: "{{ metricbeat_group }}"
     mode: 0755
   notify:
-   - restart metricbeat
+   - restart linux metricbeat
 
 - name: enable metricbeat service
   become: yes
