@@ -6,6 +6,25 @@ ansible_winrm_transport: ntlm
 ansible_winrm_server_cert_validation: ignore
 
 
+#winlogbeat output config
+winlogbeat_output:
+  file:
+    path: "C:/ProgramData/winlogbeat/output/"
+    filename: winlogbeat
+    #rotate_every_kb: 10000
+    #number_of_files: 7
+    #permissions: 0600
+
+#filebeat prospectors config
+filebeat_prospectors:
+  -
+    type: log
+    document_type: syslog
+    paths:
+      - C:/ProgramData/winlogbeat/output/winlogbeat.log
+    ignore_older: 24h
+    scan_frequency: 15s
+
 # metricbeat config specific to windows servers
 metricbeat_config_dir: "C:/ProgramData/chocolatey/lib/metricbeat/tools/"
 metricbeat_config_file_path: "C:/ProgramData/chocolatey/lib/metricbeat/tools/metricbeat.yml"
