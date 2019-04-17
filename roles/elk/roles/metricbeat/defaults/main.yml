@@ -18,13 +18,15 @@ metricbeat_config_file_path: /opt/metricbeat/current/metricbeat.yml
 # metricbeat_config_dir: "C:/ProgramData/chocolatey/lib/metricbeat/tools/"
 # metricbeat_config_file_path: "C:/ProgramData/chocolatey/lib/metricbeat/tools/metricbeat.yml"
 
-elasticsearch_host: 192.128.20.12:9200
-kibana_host: 192.128.20.12:5601
-environment: dev
+#elasticsearch_host: 192.128.20.12:9200
+
+logstash_host: 192.128.20.13:5044
+kibana_host: 192.128.20.13:5601
+environment_name: dev
 
 metricbeat_config:
   fields:
-    env: "{{ environment | default('dev') }}"
+    env: "{{ environment_name | default('dev') }}"
   metricbeat.modules:
   - module: system
     metricsets:
@@ -49,10 +51,15 @@ metricbeat_config:
   #   period: 60s
   #   hosts: ["http://127.0.0.1"]
 
-  output.elasticsearch:
+  # Enable the below configs if you need to publish data directly to ES
+  # output.elasticsearch:
+  #   enabled: true
+  #   hosts: ["{{ elasticsearch_host }}"]
+  #   index: "metricbeat-%{+yyyy.MM.dd}"
+  # setup.dashboards.enabled: true
+  # setup.kibana:
+  #   host: "{{ kibana_host }}"
+
+  output.logstash:
     enabled: true
-    hosts: ["{{ elasticsearch_host }}"]
-    index: "metricbeat-%{+yyyy.MM.dd}"
-  setup.dashboards.enabled: true
-  setup.kibana:
-    host: "{{ kibana_host }}"
+    hosts: ["{{ logstash_host }}"]

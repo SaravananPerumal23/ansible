@@ -1,5 +1,10 @@
 ---
 
+- include_tasks: java.yml
+  when: logstash_java_install
+  tags:
+      - java
+
 - name: create logstash group
   group:
     name={{ logstash_group }}

@@ -1,8 +1,15 @@
 ---
-- hosts: linux
+- hosts: elk01
   roles:
     - {role: runit, become: true, become_method: su, become_user: root}
     - {role: elasticsearch, become: true, become_method: su, become_user: root}
+    - {role: metricbeat, become: true, become_method: su, become_user: root}
+- hosts: elk02
+  roles:
+    - {role: runit, become: true, become_method: su, become_user: root}
     - {role: kibana, become: true, become_method: su, become_user: root}
     - {role: logstash, become: true, become_method: su, become_user: root}
     - {role: metricbeat, become: true, become_method: su, become_user: root}
+- hosts: windows
+  roles:
+    - metricbeat
