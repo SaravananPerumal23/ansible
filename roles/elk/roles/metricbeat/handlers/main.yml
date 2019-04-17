@@ -1,0 +1,16 @@
+---
+- name: restart linux metricbeat
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  become: yes
+  runit:
+    name: "{{ metricbeat_service_name }}"
+    enabled: yes
+    state: restarted
+    service_dir: /etc/service
+    service_src: /etc/sv
+
+- name: restart windows metricbeat
+  when: ansible_os_family == 'Windows'
+  win_service:
+    name: "{{ metricbeat_service_name }}"
+    state: restarted

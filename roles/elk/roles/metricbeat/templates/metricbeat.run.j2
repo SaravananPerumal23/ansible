@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+exec chpst -u {{metricbeat_user}} {{ metricbeat_install_dir }}/current/metricbeat -e \
+-c {{ metricbeat_config_file_path }} -d "publish"

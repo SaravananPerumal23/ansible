@@ -16,8 +16,6 @@
     state: restarted
     service_dir: /etc/service
     service_src: /etc/sv
-  notify:
-   - restart runit
 
 - name: restart windows filebeat
   when: ansible_os_family == 'Windows'

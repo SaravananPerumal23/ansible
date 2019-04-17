@@ -1,0 +1,31 @@
+---
+- name: Ensure metricbeat is installed
+  win_chocolatey:
+    name: metricbeat
+    version: "{{metricbeat_version}}"
+    state: latest
+
+- name: Ensure {{metricbeat_config_dir}} exists
+  win_file: path={{metricbeat_config_dir}} state=directory
+
+- name: check if metricbeat service exists
+  win_service:
+    name: metricbeat
+  register: metricbeat_serviceInfo
+
+- name: Ensure main metricbeat.yml is generated
+  win_template:
+    src: metricbeat.yml.j2
+    dest: "{{metricbeat_config_file_path}}"
+  notify:
+    - restart windows metricbeat
+  when:
+    metricbeat_serviceInfo.exists
+
+- name: Ensure metricbeat service is started
+  win_service:
+    name: metricbeat
+    start_mode: auto
+    state: started
+  when:
+    metricbeat_serviceInfo.exists

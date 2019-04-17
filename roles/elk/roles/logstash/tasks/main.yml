@@ -1,5 +1,10 @@
 ---
 
+- include_tasks: java.yml
+  when: logstash_java_install
+  tags:
+      - java
+
 - name: create logstash group
   group:
     name={{ logstash_group }}
@@ -21,12 +26,12 @@
     - "{{ logstash_install_dir }}"
     - "{{ logstash_log_dir }}"
     - "{{ logstash_build_folder }}"
-    - "{{ logstash_config_dir }}"
 
 - name: download logstash archive
   get_url:
     url={{ logstash_url }}
     dest={{ logstash_build_folder }}/{{ logstash_archive }}
+    force=no
   register: logstash_was_downloaded
 
 - name: copy and unpack logstash archive

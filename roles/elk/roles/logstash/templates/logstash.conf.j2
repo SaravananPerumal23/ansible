@@ -5,7 +5,15 @@ input {
 }
 
 output {
-elasticsearch { hosts => ["{{ logstash_elasticsearch_hosts }}"] }
+  if [@metadata][beat] == "metricbeat" {
+    elasticsearch {
+      index => "metricbeat-%{+yyyy.MM.dd}"
+      hosts => ["{{ logstash_elasticsearch_hosts }}"]
+    }
+  }
+  else {
+      elasticsearch { hosts => ["{{ logstash_elasticsearch_hosts }}"] }
+  }
 # uncomment this for debug messages
 #  stdout { codec => rubydebug }
 }

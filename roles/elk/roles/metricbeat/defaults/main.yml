@@ -1,0 +1,65 @@
+---
+# defaults file for metricbeat
+
+metricbeat_version: 6.6.0
+metricbeat_service_name: metricbeat
+metricbeat_archive: metricbeat-{{ metricbeat_version }}-linux-x86_64.tar.gz
+metricbeat_url: https://artifacts.elastic.co/downloads/beats/metricbeat/{{ metricbeat_archive }}
+metricbeat_user: metricbeat
+metricbeat_group: metricbeat
+
+metricbeat_install_dir: /opt/metricbeat
+metricbeat_build_folder: /tmp/metricbeat
+metricbeat_config_dir: /opt/metricbeat/current/conf.d
+metricbeat_log_dir: /opt/metricbeat/log
+metricbeat_config_file_path: /opt/metricbeat/current/metricbeat.yml
+
+#Config specific to Windows servers
+# metricbeat_config_dir: "C:/ProgramData/chocolatey/lib/metricbeat/tools/"
+# metricbeat_config_file_path: "C:/ProgramData/chocolatey/lib/metricbeat/tools/metricbeat.yml"
+
+#elasticsearch_host: 192.128.20.12:9200
+
+logstash_host: 192.128.20.13:5044
+kibana_host: 192.128.20.13:5601
+environment_name: dev
+
+metricbeat_config:
+  fields:
+    env: "{{ environment_name | default('dev') }}"
+  metricbeat.modules:
+  - module: system
+    metricsets:
+      - cpu
+      - load
+      - core
+      - diskio
+      - filesystem
+      - fsstat
+      - memory
+      - network
+      - process
+      - socket
+    enabled: true
+    period: 60s
+    processes: ['.*']
+
+  # Enable below module if needed
+  # - module: nginx
+  #   metricsets: ["stubstatus"]
+  #   enabled: true
+  #   period: 60s
+  #   hosts: ["http://127.0.0.1"]
+
+  # Enable the below configs if you need to publish data directly to ES
+  # output.elasticsearch:
+  #   enabled: true
+  #   hosts: ["{{ elasticsearch_host }}"]
+  #   index: "metricbeat-%{+yyyy.MM.dd}"
+  # setup.dashboards.enabled: true
+  # setup.kibana:
+  #   host: "{{ kibana_host }}"
+
+  output.logstash:
+    enabled: true
+    hosts: ["{{ logstash_host }}"]

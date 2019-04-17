@@ -6,3 +6,8 @@ ansible_port: 5985
 ansible_connection: winrm
 ansible_winrm_transport: ntlm
 ansible_winrm_server_cert_validation: ignore
+
+
+# metricbeat config specific to windows servers
+metricbeat_config_dir: "C:/ProgramData/chocolatey/lib/metricbeat/tools/"
+metricbeat_config_file_path: "C:/ProgramData/chocolatey/lib/metricbeat/tools/metricbeat.yml"

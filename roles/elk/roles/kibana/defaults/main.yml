@@ -13,5 +13,5 @@ kibana_config_dir: /opt/kibana/current/config
 kibana_log_dir: /opt/kibana/log
 kibana_config_file_path: /opt/kibana/current/config/kibana.yml
 
-kibana_host_address: "192.128.20.12"
+kibana_host_address: "192.128.20.13"
 kibana_elasticsearch_url: "http://192.128.20.12:9200"
