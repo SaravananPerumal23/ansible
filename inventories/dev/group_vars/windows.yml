@@ -5,8 +5,7 @@ ansible_connection: winrm
 ansible_winrm_transport: ntlm
 ansible_winrm_server_cert_validation: ignore
 
-
-#winlogbeat output config
+#winlogbeat output config- Begin
 winlogbeat_output:
   file:
     path: "C:/ProgramData/winlogbeat/output/"
@@ -14,17 +13,50 @@ winlogbeat_output:
     #rotate_every_kb: 10000
     #number_of_files: 7
     #permissions: 0600
+#winlogbeat output config- End
 
-#filebeat prospectors config
+#filebeat prospectors config- Begin
+filebeat_config_dir: "C:/ProgramData/chocolatey/lib/filebeat/tools/filebeat-{{ filebeat_version }}-windows-x86_64"
+filebeat_config_file_path: "C:/ProgramData/chocolatey/lib/filebeat/tools/filebeat-{{ filebeat_version }}-windows-x86_64/filebeat.yml"
+
+filebeat_output:
+  logstash:
+    hosts: "{{ filebeat_logstash_hosts }}"
+
 filebeat_prospectors:
   -
     type: log
     document_type: syslog
     paths:
-      - C:/ProgramData/winlogbeat/output/winlogbeat.log
+      - C:/ProgramData/winlogbeat/output/winlogbeat
     ignore_older: 24h
     scan_frequency: 15s
+#filebeat prospectors config- End
 
-# metricbeat config specific to windows servers
+# metricbeat config specific to windows servers- Begin
 metricbeat_config_dir: "C:/ProgramData/chocolatey/lib/metricbeat/tools/"
 metricbeat_config_file_path: "C:/ProgramData/chocolatey/lib/metricbeat/tools/metricbeat.yml"
+
+# metricbeat module config is defined here as load & socket modules are not avaialble for Windows instances
+metricbeat_config:
+  fields:
+    env: "{{ environment_name | default('dev') }}"
+  metricbeat.modules:
+  - module: system
+    metricsets:
+      - cpu
+      - core
+      - diskio
+      - filesystem
+      - fsstat
+      - memory
+      - network
+      - process
+    enabled: true
+    period: 60s
+    processes: ['.*']
+
+  output.logstash:
+    enabled: true
+    hosts: ["{{ logstash_host }}"]
+# metricbeat config specific to windows servers- End

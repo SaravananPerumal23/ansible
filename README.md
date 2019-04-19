@@ -89,6 +89,9 @@ Issue: ntlm: the specified credentials were rejected by the server
 Resolution: Try changing the username in inventories/dev/group_vars/all.yml file to administrator to see if that works. If so, then the Winrm is working and not for non-admin users.
 Check in Event Viewer logs and if the Login failed due to the password expiry, you need to login as that user and reset the password.
 
+Issue: Failed to establish a new connection: [Errno 113] No route to host
+Resolution: Reboot whole of your machine as this is related to network setting where another instance might have been connected from your control server with the same IP address
+
 Let's start using Ansible to check if it is able to communicate with the Windows instance that we have spinned up. Inventories can set in ansible.cfg file or it can be passed during runtime
 
 ```

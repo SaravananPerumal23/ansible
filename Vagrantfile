@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # Linux Server-01
+  # # Linux Server-01
   config.vm.define "LinuxVM1" do |web02|
     web02.vm.box = "bento/centos-7"
     web02.vm.hostname = "CentosVM1"

@@ -1,5 +1,11 @@
 ---
 
+- name: Disable Chocolatey enhanced exit codes
+  win_chocolatey_feature:
+      name: useEnhancedExitCodes
+      state: disabled
+  register: disable_result
+
 - name: Ensure winlogbeat is installed
   win_chocolatey:
     name: winlogbeat

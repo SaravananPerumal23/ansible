@@ -11,6 +11,7 @@ filebeat_runit_log_dir: "/opt/filebeat/log"
 filebeat_config_file_path: "/opt/filebeat/filebeat.yml"
 filebeat_use_runit: true
 # filebeat_elastic_search_hosts: [ "127.0.0.1:9200" ]
+filebeat_logstash_hosts: [ "192.128.20.13:5044" ]
 filebeat_logging_level: error
 filebeat_output:
   file:
