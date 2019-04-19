@@ -56,6 +56,11 @@ metricbeat_config:
   #   enabled: true
   #   hosts: ["{{ elasticsearch_host }}"]
   #   index: "metricbeat-%{+yyyy.MM.dd}"
+
+  # Enable the below config if you need to setup default dashboards.
+  # Having this config enabled will overwrite any changes done to Dashboard.
+  # So enable it only for first run and then disable.
+
   # setup.dashboards.enabled: true
   # setup.kibana:
   #   host: "{{ kibana_host }}"
