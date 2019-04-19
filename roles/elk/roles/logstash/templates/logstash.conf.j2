@@ -4,6 +4,16 @@ input {
   }
 }
 
+# Usually syslog messages when ingested into Elasticsearch has all data in message
+# field and that has to be split into individual fields using below filter
+filter {
+  if [type] == "syslog" {
+    json {
+      source => "message"
+    }
+  }
+}
+
 output {
   if [@metadata][beat] == "metricbeat" {
     elasticsearch {

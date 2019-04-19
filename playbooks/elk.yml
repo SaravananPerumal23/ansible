@@ -12,4 +12,6 @@
     - {role: metricbeat, become: true, become_method: su, become_user: root}
 - hosts: windows
   roles:
+    - winlogbeat
+    - filebeat
     - metricbeat
