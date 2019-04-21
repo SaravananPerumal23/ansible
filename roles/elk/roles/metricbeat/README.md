@@ -60,8 +60,9 @@ To fix those visualization issues, you need to edit the visualization manually f
 
 For Ex. '[Metricbeat System] Host overview' Dashboard might have issues loading 'Inbound Traffic [Metricbeat System]'. Open up this visualization and it would point out the field that is configured and which doesn't exist in Kibana as mentioned below,
 
+| Status | Error Description |
 |-------|---------|
-|The request for this panel failed| Fielddata is disabled on text fields by default. Set fielddata=true on [system.network.name] in order to load fielddata in memory by uninverting the inverted index. Note that this can however use significant memory. Alternatively use a keyword field instead. |
+| The request for this panel failed | Fielddata is disabled on text fields by default. Set fielddata=true on [system.network.name] in order to load fielddata in memory by uninverting the inverted index. Note that this can however use significant memory. Alternatively use a keyword field instead. |
 
 For this issue, you would have to specify the empty field with 'system.network.name.keyword' and that should fix the issue. Apply the changes to verify if that works and then Save it to retain the changes.
 
