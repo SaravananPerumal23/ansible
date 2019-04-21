@@ -2,7 +2,7 @@
 - name: restart elasticsearch
   become: yes
   runit:
-    name: "{{ elasticsearch_service_name }}"
+    name: "{{ es_service_name }}"
     enabled: yes
     state: restarted
     service_dir: /etc/service

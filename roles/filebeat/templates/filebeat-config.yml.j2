@@ -1,6 +1,6 @@
 filebeat:
-  prospectors:
-    {{ filebeat_prospectors | to_yaml | indent(4) }}
+  inputs:
+    {{ filebeat_inputs | to_yaml | indent(4) }}
 
 output:
   {{ filebeat_output | to_yaml | indent(4) }}

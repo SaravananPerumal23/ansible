@@ -1,67 +1,67 @@
 ---
 
 - include_tasks: java.yml
-  when: elasticsearch_java_install
+  when: es_java_install
   tags:
       - java
 
 - name: create elasticsearch group
   group:
-    name={{ elasticsearch_group }}
+    name={{ es_group }}
     state=present
 
 - name: create elasticsearch user
   user:
-    name={{ elasticsearch_user }}
-    group={{ elasticsearch_group }}
+    name={{ es_user }}
+    group={{ es_group }}
 
 - name: create elasticsearch directories
   file:
     state=directory
     path={{ item }}
-    owner={{ elasticsearch_user }}
-    group={{ elasticsearch_group }}
+    owner={{ es_user }}
+    group={{ es_group }}
     recurse=true
   with_items:
-    - "{{ elasticsearch_install_dir }}"
-    - "{{ elasticsearch_log_dir }}"
-    - "{{ elasticsearch_build_folder }}"
+    - "{{ es_install_dir }}"
+    - "{{ es_log_dir }}"
+    - "{{ es_build_folder }}"
 
 - name: download elasticsearch archive
   get_url:
-    url={{ elasticsearch_url }}
-    dest={{ elasticsearch_build_folder }}/{{ elasticsearch_archive }}
-  register: elasticsearch_was_downloaded
+    url={{ es_url }}
+    dest={{ es_build_folder }}/{{ es_archive }}
+  register: es_was_downloaded
 
 - name: copy and unpack elasticsearch archive
   unarchive:
-    src={{ elasticsearch_build_folder }}/{{ elasticsearch_archive }}
-    dest={{ elasticsearch_install_dir }}
+    src={{ es_build_folder }}/{{ es_archive }}
+    dest={{ es_install_dir }}
     copy=no
 
 - name: link installed elasticsearch directory to current
   file:
     state=link
-    src={{ elasticsearch_install_dir }}/{{ elasticsearch_archive|replace('.tar.gz', '') }}
-    path={{ elasticsearch_install_dir }}/current
-    owner={{ elasticsearch_user }}
-    group={{ elasticsearch_group }}
+    src={{ es_install_dir }}/{{ es_archive|replace('.tar.gz', '') }}
+    path={{ es_install_dir }}/current
+    owner={{ es_user }}
+    group={{ es_group }}
 
 - name: provide access permission to elasticsearch directory
   file:
     state=directory
-    path={{ elasticsearch_install_dir }}/{{ elasticsearch_archive|replace('.tar.gz', '') }}
-    owner={{ elasticsearch_user }}
-    group={{ elasticsearch_group }}
+    path={{ es_install_dir }}/{{ es_archive|replace('.tar.gz', '') }}
+    owner={{ es_user }}
+    group={{ es_group }}
     recurse=true
 
 - name: setup elasticsearch config
   template:
     backup=yes
     src=elasticsearch.yml.j2
-    dest={{ elasticsearch_config_file_path }}
-    owner={{ elasticsearch_user }}
-    group={{ elasticsearch_group }}
+    dest={{ es_config_file_path }}
+    owner={{ es_user }}
+    group={{ es_group }}
   notify: restart elasticsearch
   tags:
     - config
