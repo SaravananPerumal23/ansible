@@ -10,7 +10,7 @@
   win_chocolatey:
     name: winlogbeat
     version: "{{winlogbeat_version}}"
-    state: present
+    state: latest
 
 - name: Ensure {{winlogbeat_config_dir}} exists
   win_file: path={{winlogbeat_config_dir}} state=directory

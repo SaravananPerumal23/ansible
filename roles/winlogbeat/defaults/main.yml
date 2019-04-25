@@ -1,5 +1,5 @@
 ---
 
-winlogbeat_version: 5.6.3
-winlogbeat_config_dir: "C:/ProgramData/chocolatey/lib/winlogbeat/tools/winlogbeat-{{ winlogbeat_version }}-windows-x86_64"
-winlogbeat_config_file_path: "C:/ProgramData/chocolatey/lib/winlogbeat/tools/winlogbeat-{{ winlogbeat_version }}-windows-x86_64/winlogbeat.yml"
+winlogbeat_version: 6.6.0
+winlogbeat_config_dir: "C:/ProgramData/chocolatey/lib/winlogbeat/tools"
+winlogbeat_config_file_path: "C:/ProgramData/chocolatey/lib/winlogbeat/tools/winlogbeat.yml"

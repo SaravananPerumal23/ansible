@@ -2,8 +2,8 @@
   file:
     state: directory
     path: "{{ item }}"
-    owner: "{{ elasticsearch_user }}"
-    group: "{{ elasticsearch_group }}"
+    owner: "{{ es_user }}"
+    group: "{{ es_group }}"
   with_items:
     - "/etc/sv/elasticsearch"
     - "/etc/sv/elasticsearch/log"
@@ -12,8 +12,8 @@
   template:
     src: "elasticsearch.run.j2"
     dest: "/etc/sv/elasticsearch/run"
-    owner: "{{ elasticsearch_user }}"
-    group: "{{ elasticsearch_group }}"
+    owner: "{{ es_user }}"
+    group: "{{ es_group }}"
     mode: 0755
   notify:
    - restart elasticsearch
@@ -22,8 +22,8 @@
   template:
     src: "elasticsearch.log.run.j2"
     dest: "/etc/sv/elasticsearch/log/run"
-    owner: "{{ elasticsearch_user }}"
-    group: "{{ elasticsearch_group }}"
+    owner: "{{ es_user }}"
+    group: "{{ es_group }}"
     mode: 0755
   notify:
    - restart elasticsearch

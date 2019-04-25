@@ -2,7 +2,7 @@
 # defaults file for logstash
 
 logstash_service_name: logstash
-logstash_archive: logstash-5.6.3.tar.gz
+logstash_archive: logstash-6.6.0.tar.gz
 logstash_url: https://artifacts.elastic.co/downloads/logstash/{{ logstash_archive }}
 logstash_user: logstash
 logstash_group: logstash

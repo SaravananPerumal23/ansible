@@ -3,7 +3,7 @@
 filebeat_user_group: filebeat
 filebeat_user: filebeat
 
-filebeat_version: 5.6.3
+filebeat_version: 6.6.0
 filebeat_config_dir: "/opt/filebeat/conf.d"
 filebeat_data_dir: "/opt/filebeat/data"
 filebeat_logs_dir: "/opt/filebeat/logs"
@@ -19,10 +19,9 @@ filebeat_output:
     number_of_files: 7
     path: "/opt/filebeat/output"
     rotate_every_kb: 1_000
-filebeat_prospectors:
+filebeat_inputs:
   -
     type: log
-    document_type: syslog
     paths:
       - /opt/logs/testlog.log
     ignore_older: 24h

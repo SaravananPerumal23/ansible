@@ -16,21 +16,23 @@ winlogbeat_output:
 #winlogbeat output config- End
 
 #filebeat prospectors config- Begin
-filebeat_config_dir: "C:/ProgramData/chocolatey/lib/filebeat/tools/filebeat-{{ filebeat_version }}-windows-x86_64"
-filebeat_config_file_path: "C:/ProgramData/chocolatey/lib/filebeat/tools/filebeat-{{ filebeat_version }}-windows-x86_64/filebeat.yml"
+filebeat_config_dir: "C:/ProgramData/chocolatey/lib/filebeat/tools"
+filebeat_config_file_path: "C:/ProgramData/chocolatey/lib/filebeat/tools/filebeat.yml"
 
 filebeat_output:
   logstash:
     hosts: "{{ filebeat_logstash_hosts }}"
 
-filebeat_prospectors:
+filebeat_inputs:
   -
     type: log
-    document_type: syslog
     paths:
       - C:/ProgramData/winlogbeat/output/winlogbeat
     ignore_older: 24h
     scan_frequency: 15s
+    json.add_error_key: true
+    json.keys_under_root: true
+    json.message_key: log
 #filebeat prospectors config- End
 
 # metricbeat config specific to windows servers- Begin
