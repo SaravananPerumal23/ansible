@@ -67,3 +67,7 @@ For Ex. The visualization 'Top Event IDs' json data is provided below,
 ```
 
 In this example, 'event_id' is not a actual field in Kibana and cannot use this to show the visualization. So edit the visualization from Kibana and use the field 'event_id.keyword' and apply the changes and if that looks good, you could save this visualization and do the same for other visualizations as well.
+
+## Dashboard Screenshot
+
+![Alt text](/screenshot/Winlogbeat_Dashboard.png?raw=true "Winlogbeat Dashboard")

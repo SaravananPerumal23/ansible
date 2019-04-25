@@ -67,3 +67,8 @@ For Ex. '[Metricbeat System] Host overview' Dashboard might have issues loading 
 For this issue, you would have to specify the empty field with 'system.network.name.keyword' and that should fix the issue. Apply the changes to verify if that works and then Save it to retain the changes.
 
 Similarly, this has to be done for other visualizations and that should refelct in the Dashboard.
+
+
+## Dashboard Screenshot
+
+![Alt text](/screenshot/Metricbeat_Dashboard.png?raw=true "Metricbeat Dashboard")
